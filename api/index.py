@@ -65,6 +65,3 @@ def keyword_data():
     result_data = get_keywords_tool(input_data)
 
     return jsonify(result_data)
-
-if __name__ == "__main__":
-    app.run(debug=True)
