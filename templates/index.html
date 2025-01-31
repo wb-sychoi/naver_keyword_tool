@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>네이버 검색광고 키워드 데이터 조회</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <!-- 제목 섹션 -->
+    <section id="header-section">
+        <h1>네이버 검색광고 키워드 데이터 조회</h1>
+    </section>
+
+    <!-- 키워드 입력 폼 섹션 -->
+    <section id="input-section">
+        <div class="text-box">
+            <p>키워드를 입력해주세요.</p>
+            <p>검색할 키워드가 여러 개일 경우 쉼표를 입력하여 구분해주세요.</p>
+            <p>띄어쓰기가 필요할 경우 쉼표로 꼭 구분이 필요합니다.</p>
+            <p>쉼표 사이에는 띄어쓰기를 지원하지 않습니다.</p>
+        </div>
+        <form id="keywordForm">
+            <input type="text" id="keywords" name="keywords" placeholder="키워드를 입력하세요 (쉼표로 구분)">
+            <button type="submit">검색</button>
+        </form>
+    </section>
+
+    <!-- 키워드 데이터 출력 섹션 -->
+    <section id="data-section">
+        <table>
+            <!-- <table border="1"> -->
+            <thead>
+                <tr>
+                    <th>키워드</th>
+                    <th>월간 PC 검색 수</th>
+                    <th>월간 모바일 검색 수</th>
+                    <th>월간 PC 클릭 수</th>
+                    <th>월간 모바일 클릭 수</th>
+                    <th>월간 PC 클릭률</th>
+                    <th>월간 모바일 클릭률</th>
+                    <th>경쟁 강도</th>
+                    <th>월평균 노출 광고수</th>
+                </tr>
+            </thead>
+            <tbody id="keywordTable">
+                <!-- 키워드 데이터가 여기에 표시됩니다 -->
+            </tbody>
+        </table>
+    </section>
+
+    <section id="footer-section">
+        <p>copyright</p>
+    </section>
+
+    <script>
+        document.getElementById('keywordForm').addEventListener('submit', function (event) {
+            event.preventDefault(); // 기본 제출 방지
+
+            let formData = new FormData(this);
+
+            fetch('/keyword_data', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    let tableBody = document.getElementById('keywordTable');
+                    tableBody.innerHTML = ''; // 기존 데이터 삭제
+
+                    data.forEach(keyword => {
+                        let row = document.createElement('tr');
+                        row.innerHTML = `
+                        <td>${keyword.relKeyword}</td>
+                        <td>${keyword.monthlyPcQcCnt}</td>
+                        <td>${keyword.monthlyMobileQcCnt}</td>
+                        <td>${keyword.monthlyAvePcClkCnt}</td>
+                        <td>${keyword.monthlyAveMobileClkCnt}</td>
+                        <td>${keyword.monthlyAvePcCtr}</td>
+                        <td>${keyword.monthlyAveMobileCtr}</td>
+                        <td>${keyword.compIdx}</td>
+                        <td>${keyword.plAvgDepth}</td>
+                    `;
+                        tableBody.appendChild(row);
+                    });
+                });
+        });
+    </script>
+</body>
+
+</html>
